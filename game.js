@@ -89,6 +89,23 @@ ctx.fillText('GAME OVER - Press Space', 300, 150);
 
 requestAnimationFrame(loop);
 }
+const backgroundLayers = [
+{ x: 0, speed: 1, color: '#1a1a1a' },
+{ x: 0, speed: 2, color: '#222' }
+];
+
+
+function drawBackground() {
+backgroundLayers.forEach(layer => {
+layer.x -= layer.speed;
+if (layer.x <= -canvas.width) layer.x = 0;
+
+
+ctx.fillStyle = layer.color;
+ctx.fillRect(layer.x, 0, canvas.width, canvas.height);
+ctx.fillRect(layer.x + canvas.width, 0, canvas.width, canvas.height);
+});
+}
 
 
 loop();
