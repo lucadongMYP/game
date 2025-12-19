@@ -109,3 +109,83 @@ ctx.fillRect(layer.x + canvas.width, 0, canvas.width, canvas.height);
 
 
 loop();
+let shieldActive = false;
+let shieldTimer = 0;
+const powerUps = [];
+
+
+function spawnPowerUp() {
+powerUps.push({ x: canvas.width, y: GROUND_Y - 20, w: 20, h: 20 });
+}
+if (frame % 800 === 0) spawnPowerUp();
+powerUps.forEach((p, i) => {
+  p.x -= speed;
+  if (isColliding(player, p)) {
+    shieldActive = true;
+    shieldTimer = 300;
+    powerUps.splice(i, 1);
+  }
+});
+if (shieldActive) {
+shieldTimer--;
+if (shieldTimer <= 0) shieldActive = false;
+}
+if (isColliding(player, o) && !shieldActive) {
+gameOver = true;
+}
+if (shieldActive) {
+ctx.strokeStyle = '#0ff';
+ctx.strokeRect(player.x - 5, player.y - 5, player.w + 10, player.h + 10);
+}
+let jumpCount = 0;
+
+
+// modify jump logic
+if (e.code === 'Space') {
+if (jumpCount < 2 && !gameOver) {
+player.vy = JUMP_FORCE;
+jumpCount++;
+}
+}
+
+
+// reset on ground
+if (player.y >= GROUND_Y) {
+jumpCount = 0;
+}
+<audio id="jumpSound" src="jump.wav"></audio>
+<audio id="hitSound" src="hit.wav"></audio>
+
+const jumpSound = document.getElementById('jumpSound');
+const hitSound = document.getElementById('hitSound');
+
+jumpSound.currentTime = 0;
+jumpSound.play();
+canvas.addEventListener('touchstart', () => {
+if (!gameOver) {
+player.vy = JUMP_FORCE;
+} else {
+resetGame();
+}
+});
+const enemy = {
+x: 300,
+y: GROUND_Y,
+w: 30,
+h: 40,
+vy: 0,
+
+
+update() {
+if (Math.random() < 0.02) this.vy = JUMP_FORCE;
+this.vy += GRAVITY;
+this.y += this.vy;
+if (this.y >= GROUND_Y) this.y = GROUND_Y;
+},
+
+
+draw() {
+ctx.fillStyle = '#ff0';
+ctx.fillRect(this.x, this.y, this.w, this.h);
+}
+};
